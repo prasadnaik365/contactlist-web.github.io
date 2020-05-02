@@ -1,4 +1,5 @@
 var button = document.getElementById("enter");
+let btnSearch = document.getElementById("search");
 var inputName = document.getElementById("userinputName");
 var inputNumber = document.getElementById("userinputNumber");
 let wrapperDiv = document.querySelector(".wrapper");
@@ -10,18 +11,6 @@ function addContactAfterClick() {
     createContact();
   }
 }
-// keypress event listener
-inputName.addEventListener("keypress", addContactAfterKeypres);
-inputNumber.addEventListener("keypress", addContactAfterKeypres);
-function addContactAfterKeypres() {
-  if (
-    inputNameLength() > 0 &&
-    inputNumberLength() > 0 &&
-    event.keyCode === 13
-  ) {
-    createContact();
-  }
-}
 // returns length of the input value(String)
 function inputNameLength() {
   return inputName.value.length;
@@ -30,7 +19,6 @@ function inputNumberLength() {
   return inputNumber.value.length;
 }
 // functions to create contacts to local storage
-
 // create contact
 function createContact() {
   // adding list to local storage
@@ -42,53 +30,42 @@ function createContact() {
   }
   let name = inputName.value;
   let contactNumber = inputNumber.value;
-  contacts.push({ name, contactNumber });
+
   localStorage.setItem("contacts", JSON.stringify(contacts));
-  let p = document.createElement("p");
-  p.textContent = `✓ contact has been saved successfuly to storage!`;
-  wrapperDiv.insertBefore(p, inputName);
-  // alert("contact has been saved to localstorage");
+  // which index of existing element in array
+  const index = contacts.findIndex((contact) => contact.name === name);
+  if (indexFinder(name, contacts) === -1) {
+    contacts.push({ name, contactNumber });
+    let p = document.createElement("p");
+    p.textContent = `✓ contact has been saved successfuly to storage!`;
+    wrapperDiv.insertBefore(p, inputName);
+  } else {
+    let p = document.createElement("p");
+    p.textContent = `${name} is already exist in contacts!`;
+    p.style.color = "red";
+    wrapperDiv.insertBefore(p, inputNumber);
+  }
   inputName.value = "";
   inputNumber.value = "";
 }
-let contacts = JSON.parse(localStorage.getItem("contacts"));
+// code for button search
+btnSearch.addEventListener("click", searchContactAfterClick);
+function searchContactAfterClick() {
+  let contacts = JSON.parse(localStorage.getItem("contacts"));
+  if (indexFinder(inputName.value, contacts) !== -1) {
+    // it show contact number in number input field
+    inputNumber.value =
+      contacts[indexFinder(inputName.value, contacts)].contactNumber;
+  } else {
+    let p = document.createElement("p");
+    p.textContent = `${inputName.value} contact does not exist in contactlist`;
+    wrapperDiv.insertBefore(p, inputName);
+  }
+}
 
-console.log(contacts);
+// function which returns index of array element
+function indexFinder(nme, array) {
+  const index = array.findIndex((ele) => ele.name === nme);
+  return index;
+}
 
-// invoking function create list items using local storage
-// (() => {
-//   contacts.forEach((element, i) => {
-//     var li = document.createElement("li");
-//     li.appendChild(document.createTextNode(" " + element));
-//     li.appendChild(createBtnDelete());
-//     ul.appendChild(li);
-//     input.value = "";
-//   });
-// })();
-
-// // create delete button list item
-// function createBtnDelete() {
-//   var btnDelete = document.createElement("span");
-//   btnDelete.appendChild(document.createTextNode("X"));
-//   btnDelete.classList.add("btn-delete");
-//   return btnDelete;
-// }
-
-// // toggle and delte list item
-
-// ul.addEventListener("click", function (ev) {
-//   if (ev.target.tagName === "LI") {
-//     // toggel when li clicked
-//     ev.target.classList.toggle("done");
-//   } else if (ev.target.tagName === "SPAN") {
-//     // delete li when span clicked
-//     // var todos = JSON.parse(localStorage.getItem("todos"));
-//     ev.target.parentElement.classList.add("delete");
-//     let todoValue = ev.target.parentElement.textContent;
-//     let finalTodoValue = todoValue.slice(0, todoValue.length - 1);
-//     // to delete todo item from an array
-//     const index = todos.findIndex((todo) => todo === finalTodoValue);
-//     todos.splice(index, 1);
-//     localStorage.setItem("todos", JSON.stringify(todos));
-//   }
-// });
