@@ -49,9 +49,9 @@ function createContact() {
   inputNumber.value = "";
 }
 // code for button search
+let contacts = JSON.parse(localStorage.getItem("contacts"));
 btnSearch.addEventListener("click", searchContactAfterClick);
 function searchContactAfterClick() {
-  let contacts = JSON.parse(localStorage.getItem("contacts"));
   if (indexFinder(inputName.value, contacts) !== -1) {
     // it show contact number in number input field
     inputNumber.value =
@@ -64,8 +64,8 @@ function searchContactAfterClick() {
 }
 
 // function which returns index of array element
-function indexFinder(nme, array) {
-  const index = array.findIndex((ele) => ele.name === nme);
+function indexFinder(nme, contacts) {
+  const index = contacts.findIndex((ele) => ele.name === nme);
   return index;
 }
 
